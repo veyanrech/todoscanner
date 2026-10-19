@@ -58,6 +58,7 @@ Notes:
 
 - `TODO` must be uppercase; the colon is optional (`// TODO fix` works too).
 - A `//TODO` ends at the first non-`//` line, an empty `//` line, or another TODO.
+  A `/* ... */` comment directly after it is appended to the TODO.
 - Trailing comments (`x := 1 // TODO: ...`) and `/** TODO ... */` are recognised.
 - Binary files and `.git`, `.hg`, `.svn`, `node_modules`, `vendor` folders are skipped.
 - Each report row is `task | /abs/path/to/file:line`.

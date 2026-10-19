@@ -35,7 +35,8 @@ const maxLineSize = 16 * 1024 * 1024
 //	/*TODO: text ... */   everything up to the closing */
 //
 // A // TODO ends at the first line that is not a // comment, is an empty
-// // comment, or starts another TODO.
+// // comment, or starts another TODO. A /* */ comment directly after it is
+// appended to it.
 func ParseTodos(r io.Reader, path string) ([]Todo, error) {
 	var (
 		todos  []Todo
@@ -82,6 +83,20 @@ func ParseTodos(r io.Reader, path string) ([]Todo, error) {
 				if strings.TrimSpace(body) != "" && !todoRe.MatchString(body) {
 					add(body)
 					continue
+				}
+			}
+			// A /* */ comment right after a //TODO continues it.
+			if body, ok := strings.CutPrefix(trimmed, "/*"); ok {
+				body = strings.TrimLeft(body, "*")
+				if !todoRe.MatchString(body) {
+					end := strings.Index(body, "*/")
+					if end < 0 {
+						add(cleanBlockLine(body))
+						state = stateBlock
+						continue
+					}
+					add(body[:end])
+					line = body[end+2:]
 				}
 			}
 			flush()

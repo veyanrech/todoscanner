@@ -87,6 +87,29 @@ still text`,
 			want: []Todo{{Text: "never closed still text", Line: 1}},
 		},
 		{
+			name: "block comment after line todo continues it",
+			src: `	//TODO: refactor
+	/*
+		defer is bound to the function,
+		not the block
+	*/
+	code()`,
+			want: []Todo{{Text: "refactor defer is bound to the function, not the block", Line: 1}},
+		},
+		{
+			name: "single line block after line todo",
+			src: `// TODO: a
+// b
+/* c */ // TODO: d`,
+			want: []Todo{{Text: "a b c", Line: 1}, {Text: "d", Line: 3}},
+		},
+		{
+			name: "block todo after line todo is separate",
+			src: `// TODO: a
+/* TODO: b */`,
+			want: []Todo{{Text: "a", Line: 1}, {Text: "b", Line: 2}},
+		},
+		{
 			name: "todo after block end on same line",
 			src: `/* TODO: a
 b */ // TODO: c`,
